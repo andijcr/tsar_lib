@@ -1,0 +1,12 @@
+//
+// Created by andrea on 15/09/15.
+//
+
+#ifndef PRODUCERS_CONSUMERS_TEST_COMMON_H
+#define PRODUCERS_CONSUMERS_TEST_COMMON_H
+
+#define CATCH_CONFIG_COLOUR_NONE
+#define CATCH_CONFIG_MAIN
+#include "catch.hpp"
+
+#endif //PRODUCERS_CONSUMERS_TEST_COMMON_H
