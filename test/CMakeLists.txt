@@ -7,3 +7,6 @@ set(TEST_SOURCES test_common.cpp testTSAR.cpp catch/catch.hpp ${PROJECT_SOURCE_D
 
 add_executable(testTSAR ${TEST_SOURCES})
 target_link_libraries(testTSAR tsar)
+
+add_executable(testAbort testInmemLogStarvation.cpp ${PROJECT_SOURCE_DIR}/tsar.h)
+target_link_libraries(testAbort inmem_logger)

@@ -7,6 +7,8 @@
 #include <vector>
 #include <cstring>
 #include <iostream>
+#include <signal.h>
+#include <unistd.h>
 #include "catch.hpp"
 
 extern "C" {
@@ -105,8 +107,11 @@ SCENARIO("inmemory_logger is threadsafe", "[inmem_log]"){
             auto num_logs = long(INMEM_BUFFER_SIZE / (num_writers * 0.5));
             REQUIRE(num_writers*num_logs > INMEM_BUFFER_SIZE);
             auto log_writer = [num_logs] {
-                for (auto i = 0; i < num_logs; ++i)
+                for (auto i = 0; i < num_logs; ++i) {
                     inmem_log("Test inmem_log", i);
+                    //adding a yield help prevent starvation of other thread. obviously, this depends on the scheduler, which is out of reach
+                    this_thread::yield();
+                }
             };
 
             vector<future<void>> f_inst(num_writers);
@@ -128,7 +133,6 @@ SCENARIO("inmemory_logger is threadsafe", "[inmem_log]"){
                     outlier = adjacent_find(outlier+1, end(events_dump), gt_inmem_evt);
                     ++counter;
                 }
-
                 REQUIRE(counter<=1);
             }
         }

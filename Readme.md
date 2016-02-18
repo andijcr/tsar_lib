@@ -28,6 +28,14 @@ ma visto che la semantica delle due api non coincide perfettamente, per questo p
 Per i test è utilizzato [catch](https://github.com/philsquared/Catch), un framework c++ per il BDD. Per i test verrà utilizzato c++14, con la libreria
 opportunamente inclusa come `extern "C"`, mentre l'eseguibile sarà testato attraverso connessioni tcp su interfaccia di loopback
 
+#### testInmemLogStarvation.cpp
+`lib/inmemory_logger.h` è un logger in memoria multithread lockfree (utilizza un intero atomic). Data la sua natura non c'è protezione contro lo starvation di un thread
+Per esempio, un thread potrebbe essere bloccato fra l'acquisizione atomica di un indice per scrivere nel buffer, e l'operazione di scrittura nel buffer. Se altri thread in scrittura nel buffer
+non permettono al thread bloccato di continuare, eventualmente si verificherà una interferenza nel momento in cui un nuovo thread scrive nello stesso indice del thread bloccato. 
+in caso di interferenza, a seconda del momento in cui il primo thread riprende l'esecuzione, possiamo avere in unterferenza in scrittur oppure un semplice overwrite di un log più recente con un log più vecchio.
+La prima versione dei test incappava in questo problema, perché la funzione di log veniva eseguita in un loop stretto. Il problema è stato mitigato utilizzando `std::this_thread::yield()`, per permettere ad altri thread 
+di avanzare.
+
 ## Design 
 La libreria è thread safe ma non multithread: le funzioni sono bloccanti o con timeout, e sta ai client implementare il multithread
 L'applicativo invece è multithread: uno per leggere lo stream in ingresso dei dati, un thread di controllo ed un thread per ogni subscriber.
