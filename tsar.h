@@ -13,7 +13,7 @@ void tsar_destroy(tsar_t*);
 
 typedef struct in_chan_t in_chan_t;
 
-in_chan_t* publisher_create(tsar_t* t, char* name, int name_l );
-void publisher_remove(in_chan_t*);
+in_chan_t* publisher_create(tsar_t* t, const char* name);
+void publisher_remove(tsar_t* t, in_chan_t*);
 
 #endif //TSAR_THREADSAFEROUTER_TSAR_H

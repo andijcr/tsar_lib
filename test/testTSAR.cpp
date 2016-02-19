@@ -12,7 +12,7 @@
 #include "catch.hpp"
 
 extern "C" {
-#include <lib/inmemory_logger.h>
+#include "lib/inmemory_logger.h"
 #include "tsar.h"
 
 }

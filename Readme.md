@@ -38,7 +38,9 @@ di avanzare.
 
 ## Design 
 La libreria è thread safe ma non multithread: le funzioni sono bloccanti o con timeout, e sta ai client implementare il multithread
-L'applicativo invece è multithread: uno per leggere lo stream in ingresso dei dati, un thread di controllo ed un thread per ogni subscriber.
+L'applicativo invece è multithread: uno per leggere lo stream in ingresso dei dati, un thread di controllo ed un thread per ogni subscribe.
+Nel dettaglio, per ogni subscriber esiste una coda, ed per ogni publisher esiste una lista di subscriber a cui interessa il proprio feed.
+è responsabilità del publisher copiare il proprio messaggio nelle code dei subscriber. il Payload di un messaggio è un array di byte non tipizzato
 
 ### tsar.h
 l'header `tsar.h` espone le funzioni della libreria
@@ -49,7 +51,8 @@ La libreria vive nello slice di tempo fra due funzioni
     void tsar_destroy(tsar_t*);
 
 la chiamata ritorna un puntatore a `tsar_t` che permette di manipolare l'istanza di router associata per ottenere lo stream di entrata
-e uno o più stream di uscita
+e uno o più stream di uscita. la funzione tsar_destroy esegue anche il flush dei messaggi rimasti nelle code dei subscribers: blocca 
+finché le code non si sono svuotate, alché completa il liberamento delle risorse
 
     in_chan_t* publisher_create(tsar_t* t, char* name, int name_l );
     void publisher_remove(in_chan_t*);
